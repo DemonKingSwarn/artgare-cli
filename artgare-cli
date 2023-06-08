@@ -1,0 +1,12 @@
+#!/bin/sh
+
+base_url="https://artgare.com/free-3d-models"
+
+download_dir="$HOME/Downloads/artgare-cli"
+mkdir -p "$download_dir"
+
+ch=$(curl -A "uwu" -sL "https://artgare.com/3d-library-listing-sitemap.xml" | grep -o "https\?://artgare.com/free-3d-models/.[a-zA-Z0-9_-]*" | awk -F'/' '{print $5}' | fzf --reverse --height=35%)
+
+dl_url=$(curl -A "uwu" -sL "$base_url/$ch" | grep -o "https\?://cdn\..\S*\.[a-zA-Z0-9]*") || dl_url=$(curl -A "uwu" -sL "$base_url/$ch" | grep -o "https\?://dl\..\S*\..[a-zA-Z0-9]*")
+
+aria2c -x 16 -s 16 "$dl_url" --dir="$download_dir"
