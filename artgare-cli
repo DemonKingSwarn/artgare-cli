@@ -3,7 +3,7 @@
 base_url="https://artgare.com/free-3d-models"
 
 download_dir="$HOME/Downloads/artgare-cli"
-test -d "$download_dir" || mkdir "$download_dir"
+test -d "$download_dir" || mkdir -p "$download_dir"
 
 ch=$(curl -A "uwu" -sL "https://artgare.com/3d-library-listing-sitemap.xml" | grep -o "https\?://artgare.com/free-3d-models/.[a-zA-Z0-9_-]*" | awk -F'/' '{print $5}' | fzf --reverse --height=35%)
 
