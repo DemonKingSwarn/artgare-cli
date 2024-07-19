@@ -1,12 +1,14 @@
 #!/bin/sh
 
 base_url="https://artgare.com/free-3d-models"
+agent="Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
 
 download_dir="$HOME/Downloads/artgare-cli"
 test -d "$download_dir" || mkdir -p "$download_dir"
 
-ch=$(curl -A "uwu" -sL "https://artgare.com/3d-library-listing-sitemap.xml" | grep -o "https\?://artgare.com/free-3d-models/.[a-zA-Z0-9_-]*" | awk -F'/' '{print $5}' | fzf --reverse --height=35%)
+ch=$(curl -A "$agent" -sL "https://artgare.com/3d-models-sitemap.xml" | grep -o "https\?://artgare.com/free-3d-models/.[a-zA-Z0-9_-]*" | awk -F'/' '{print $5}' | fzf --reverse --height=35%)
 
-dl_url=$(curl -A "uwu" -sL "$base_url/$ch" | grep -o "https\?://cdn\..\S*\.[a-zA-Z0-9]*\|https\?://dl\..\S*\..[a-zA-Z0-9]*")
+dl_url=$(curl -A "$agent" -sL "$base_url/$ch" | grep -Eo 'https://www.dropbox.com.\S*;dl=1')
+dl_url=$(echo "$dl_url" | sed 's/&#038;/\&/g')
 
 aria2c -x 16 -s 16 "$dl_url" --dir="$download_dir"
