@@ -1,14 +1,14 @@
 #!/bin/sh
 
-base_url="https://artgare.com/free-3d-models"
+base_url="https://artgare.com"
 agent="Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+download_dir="$HOME/dl/artgare-cli"
+preview_width="1080" # adjust to ur screen size
 
-download_dir="$HOME/Downloads/artgare-cli"
-test -d "$download_dir" || mkdir -p "$download_dir"
+ch=$(curl -sA "$agent" "$base_url/3d-models-sitemap.xml" | tr -d '\n' | sed 's|<url>|\n|g' | sed -nE 's|.*<loc>(.*free-3d-models)/([^<]*)/<.*<image:loc>([^<]*)<.*|\3\t\1\t\2|p' | fzf --preview="img2sixel {1} -w $preview_width" --with-nth 3.. --border --preview-window right:60%:wrap --reverse | cut -f2-3 | tr '\t' '/')
 
-ch=$(curl -A "$agent" -sL "https://artgare.com/3d-models-sitemap.xml" | grep -o "https\?://artgare.com/free-3d-models/.[a-zA-Z0-9_-]*" | awk -F'/' '{print $5}' | fzf --reverse --height=35%)
+[ -z "$ch" ] && printf "\33[2K\r\033[1;31mNo Item selected\n" && exit 1
 
-dl_url=$(curl -A "$agent" -sL "$base_url/$ch" | grep -Eo 'https://www.dropbox.com.\S*;dl=1')
-dl_url=$(echo "$dl_url" | sed 's/&#038;/\&/g')
+dl_url=$(curl -A "$agent" -s "$ch/" | sed -nE 's|.*href="([^"]*dl=1)">|\1|p')
 
-aria2c -x 16 -s 16 "$dl_url" --dir="$download_dir"
+aria2c -x 16 -s 16 "$dl_url" --dir="$download_dir" --summary-interval=0 --download-result=hide

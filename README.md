@@ -17,3 +17,4 @@ sudo chmod +x /usr/local/bin/artgare-cli
 # Dependencies
 - [`fzf`](https://github.com/junegunn/fzf) - for selection screen.
 - [`aria2`](https://github.com/aria2/aria2) - download manager.
+- [`libsixel`](https://github.com/libsixel/libsixel) - for image previews
